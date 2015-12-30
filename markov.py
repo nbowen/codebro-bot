@@ -21,9 +21,7 @@ class Markov():
         if seed_phrase:
             w1,w2 = seed_phrase[0], seed_phrase[1]
         else:
-            valid_starts = [
-                    (x[0], x[1]) for x in cache if x[0] == "<START>"
-            ]
+            valid_starts = [(x[0], x[1]) for x in cache if x[0] == "<START>"]
             w1, w2 = valid_starts[random.randint(0, len(valid_starts) - 1)] 
         
         gen_words = []
