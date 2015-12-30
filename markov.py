@@ -59,6 +59,8 @@ class Markov():
         #strip, uppercase, and check for inclusion in IGNORE_WORDS list 
         is_ignored = lambda x: x.strip("\'\"!@#$%^&*().,/\\+=<>?:;").upper() in IGNORE_WORDS 
         tokens = [x for x in tokens if not is_ignored(x)]
+        if len(tokens) == 0:
+            return #nothing to learn here!
 
         tokens[len(tokens) - 1] = tokens[len(tokens) - 1].strip(".?!")
         tokens = [u"<START>"] + tokens + [u"<STOP>"] 
