@@ -17,16 +17,16 @@ class Markov():
 
 
     def generate_markov_text(self, words, cache, seed_phrase=None):
-        w1, w2 = "<START>", ""
+        w1, w2 = "u<START>", ""
         if seed_phrase:
             w1,w2 = seed_phrase[0], seed_phrase[1]
         else:
-            valid_starts = [(x[0], x[1]) for x in cache if x[0] == "<START>"]
+            valid_starts = [(x[0], x[1]) for x in cache if x[0] == "u<START>"]
             w1, w2 = valid_starts[random.randint(0, len(valid_starts) - 1)] 
         
         gen_words = []
         while True: 
-            if w2 == "<STOP>":
+            if w2 == "u<STOP>":
                 break 
             w1, w2 = w2, random.choice(cache[(w1, w2)])
             gen_words.append(w1)
