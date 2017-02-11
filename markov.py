@@ -1,5 +1,6 @@
 import yaml
 import random
+from multiprocessing import Process
 
 BACKUP_FILE="codebro.yaml" 
 IGNORE_WORDS=["CODEBRO", u"CODEBRO"]
@@ -108,6 +109,7 @@ class Markov():
 
         if learn:
             self.learn(prompt)
+            Process(target=self.learn, args=(prompt,)).start()
         return response
 
 
