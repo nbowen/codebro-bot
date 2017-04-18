@@ -108,7 +108,6 @@ class Markov():
             response = self.generate_markov_text(self.words, self.cache)
 
         if learn:
-            self.learn(prompt)
             Process(target=self.learn, args=(prompt,)).start()
         return response
 
