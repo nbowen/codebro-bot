@@ -1,33 +1,33 @@
 import yaml
 import random
-from multiprocessing import Process
+from multiprocessing import Lock, Manager, Process
 
 BACKUP_FILE="codebro.yaml" 
 IGNORE_WORDS=["CODEBRO", u"CODEBRO"]
 
+
 # instantiate a Markov object with the source file 
 class Markov(): 
     def __init__(self, source_file): 
-        self.words = self.load_corpus(source_file)
-        self.cache = self.database(self.words, {})
-
+        self.manager = Manager()
+        self.words = self.manager.list(self.load_corpus(source_file))
+        self.cache = self.manager.dict(self.database(self.words, {}))
     
     def load_corpus(self, source_file):
         with open(source_file, 'r') as infile:
             return yaml.load(infile.read())
 
-
     def generate_markov_text(self, words, cache, seed_phrase=None):
-        w1, w2 = "u<START>", ""
+        w1, w2 = "<START>", ""
         if seed_phrase:
             w1,w2 = seed_phrase[0], seed_phrase[1]
         else:
-            valid_starts = [(x[0], x[1]) for x in cache if x[0] == "u<START>"]
+            valid_starts = [(x[0], x[1]) for x in cache.keys() if x[0] == "<START>"]
             w1, w2 = valid_starts[random.randint(0, len(valid_starts) - 1)] 
         
         gen_words = []
         while True: 
-            if w2 == "u<STOP>":
+            if w2 == "<STOP>":
                 break 
             w1, w2 = w2, random.choice(cache[(w1, w2)])
             gen_words.append(w1)
@@ -35,13 +35,11 @@ class Markov():
         message = ' '.join(gen_words)
         return message
  
- 
     def triples(self, words):
         if len(words) < 3:
             return
         for i in range(len(words) - 2):
             yield (words[i], words[i+1], words[i+2])
-                
 
     def database(self, words, cache):
         for w1, w2, w3 in self.triples(words):
@@ -52,7 +50,6 @@ class Markov():
             else:
                 cache[key] = [w3]
         return cache
-
 
     def learn(self, sentence):
         tokens = sentence.split()
@@ -73,9 +70,13 @@ class Markov():
 
         self.words += tokens
         self.cache = self.database(self.words, {})
+        lk = Lock()
+        # there must be a better way to serialize from the proxy ..
+        local_words = [word for word in self.words]
         with open('codebro.yaml', 'w') as outfile:
-            outfile.write(yaml.dump(self.words, default_flow_style=True))
-        
+            lk.acquire()
+            outfile.write(yaml.dump(local_words, default_flow_style=True))
+            lk.release()
         
     def create_response(self, prompt="", learn = False):
         prompt_tokens = prompt.split()
@@ -108,7 +109,6 @@ class Markov():
             response = self.generate_markov_text(self.words, self.cache)
 
         if learn:
-            Process(target=self.learn, args=(prompt,)).start()
+            p = Process(target=self.learn, args=(prompt,))
+            p.start()
         return response
-
-
