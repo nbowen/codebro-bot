@@ -1,7 +1,6 @@
 import yaml
 import random
 from multiprocessing import Lock, Manager, Process
-from os import urandom
 
 BACKUP_FILE="codebro.yaml" 
 IGNORE_WORDS=["CODEBRO", u"CODEBRO"]
@@ -16,7 +15,7 @@ class Markov():
     
     def load_corpus(self, source_file):
         with open(source_file, 'r') as infile:
-            return yaml.load(infile.read())
+            return yaml.load(infile.read(), Loader=yaml.FullLoader)
 
     def generate_markov_text(self, words, cache, seed_phrase=None):
         w1, w2 = "<START>", ""
@@ -24,7 +23,7 @@ class Markov():
             w1,w2 = seed_phrase[0], seed_phrase[1]
         else:
             valid_starts = [(x[0], x[1]) for x in cache.keys() if x[0] == "<START>"]
-            w1, w2 = valid_starts[urandom.randint(0, len(valid_starts) - 1)]
+            w1, w2 = valid_starts[random.randint(0, len(valid_starts) - 1)]
         
         gen_words = []
         while True: 
