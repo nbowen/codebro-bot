@@ -2,9 +2,10 @@
 
 #Pre-process some input text into a YAML list of unicode strings 
 import yaml 
+import codecs
 
 def file_to_words(): 
-    fh = open("./codebro.txt", "r")
+    fh = codecs.open("./codebro.txt", "r", encoding="utf-8")
     fh.seek(0)
     lines = list(fh)
 
