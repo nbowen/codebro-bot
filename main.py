@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import time
-import json
 import yaml
 import random
 from slackclient import SlackClient
@@ -47,7 +46,7 @@ else:
     print "Connect failed; invalid token?" 
 
 #set codebro ID
-users = json.loads(sc.api_call("users.list"))
+users = sc.api_call("users.list")
 codebro_id = ''
 for member in users["members"]:
     if member["name"] == "codebro":
