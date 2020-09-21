@@ -12,7 +12,6 @@ def file_to_words():
     #work in reverse to add <START>, <STOP> to replace punctuation
     words = []
     for line in lines:
-        line_count += 1
         tokens = line.split() 
         if (len(tokens) == 0):
             continue
@@ -24,7 +23,7 @@ def file_to_words():
             tokens.insert(i + 1, "<STOP>")
             tokens.insert(i + 2, "<START>")
         words += tokens 
-    words = map( lambda x: unicode(x), words )     
+    words = list( map( lambda x: str(x), words ) )
     return words
 
 

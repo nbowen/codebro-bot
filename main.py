@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import time
 import json
@@ -42,9 +42,9 @@ def handle_message(msg):
 token = load_settings()
 sc = SlackClient(token)
 if sc.rtm_connect():
-    print "###CONNECTED###"
+    print("###CONNECTED###")
 else:
-    print "Connect failed; invalid token?" 
+    print("Connect failed; invalid token?")
 
 #set codebro ID
 users = json.loads(sc.api_call("users.list"))
@@ -64,7 +64,7 @@ while True:
         tmp = current_wait
         current_wait = current_wait + previous_wait
         previous_wait = tmp
-        print "failed; retrying in {time) seconds".format(time=current_wait)
+        print("failed; retrying in {time) seconds".format(time=current_wait))
 
 
 
