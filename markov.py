@@ -51,6 +51,9 @@ class Markov():
                 cache[key] = [w3]
         return cache
 
+    def pretend_to_learn(self, sentence):
+        print("I will pretend to learn '%s' which is of type %s" % (sentence, type(sentence)))
+
     def learn(self, sentence):
         tokens = sentence.split()
 
@@ -73,6 +76,7 @@ class Markov():
         lk = Lock()
         # there must be a better way to serialize from the proxy ..
         local_words = [word for word in self.words]
+        print("These local_words are of type: %s" % local_words)
         with open('codebro.yaml', 'w') as outfile:
             lk.acquire()
             outfile.write(yaml.dump(local_words, default_flow_style=True))
@@ -89,10 +93,10 @@ class Markov():
         #create a set of lookups for phrases that start with words 
         #contained in prompt phrase 
         seed_tuples = []
-        for i in range(0, len(prompt_tokens)-2 ):
+        for i in range(0, len(prompt_tokens) - 1):
             seed_phrase = ("<START>", prompt_tokens[i])
             seed_tuples.append(seed_phrase)
-        
+
         #lookup seeds in cache; compile a list of 'hits' 
         seed_phrase = None
         valid_seeds = []
@@ -109,6 +113,10 @@ class Markov():
             response = self.generate_markov_text(self.words, self.cache)
 
         if learn:
-            p = Process(target=self.learn, args=(prompt,))
-            p.start()
+            print("I will be learning from '%s'" % prompt)
+            #p = Process(target=self.learn, args=(prompt,))
+            #p = Process(target=self.pretend_to_learn, args=(prompt))
+            #p.start()
+            self.learn(prompt)
+
         return response
