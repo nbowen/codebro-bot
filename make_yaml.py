@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/env python
 
 #Pre-process some input text into a YAML list of unicode strings 
 import yaml 
@@ -14,6 +14,8 @@ def file_to_words():
     words = []
     for line in lines:
         tokens = line.split() 
+        if (len(tokens) == 0):
+            continue
         tokens[len(tokens) - 1] = tokens[len(tokens) - 1].strip(".?!")
         tokens = ["<START>"] + tokens + ["<STOP>"] 
         indexes_with_stops = [tokens.index(x) for x in tokens if x.strip(".?!") != x]
@@ -22,7 +24,7 @@ def file_to_words():
             tokens.insert(i + 1, "<STOP>")
             tokens.insert(i + 2, "<START>")
         words += tokens 
-    words = map( lambda x: unicode(x), words )     
+    words = list( map( lambda x: str(x), words ) )
     return words
 
 
